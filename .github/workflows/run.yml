@@ -10,9 +10,10 @@ jobs:
       contents: write
     steps:
       - name: Checkout repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git clone https://x-access-token:${{ github.token }}@://github.com{{ github.repository }}.git .
-          git checkout ${{ github.ref_name }}
+          git clone "https://x-access-token:${GITHUB_TOKEN}@://github.com{GITHUB_REPOSITORY}.git" .
       - name: Run script
         run: python3 build_csv.py
       - name: Save CSV to repo
