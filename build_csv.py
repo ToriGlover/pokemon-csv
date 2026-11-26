@@ -11,6 +11,11 @@ CATEGORIES = [
 ]
 
 OUTPUT_FILE = 'pokemon_all_cards_master.csv'
+BASE_PARTS = ['https:', '', 'tcgcsv.com', 'tcgplayer']
+
+
+def make_url(*parts):
+  return '/'.join(BASE_PARTS + list(parts))
 
 
 def fetch_csv(url):
@@ -25,16 +30,14 @@ with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8-sig') as f:
   writer.writerow(['Language', 'Set Name', 'Card Name', 'Number', 'Finish'])
 
   for cat_id, lang in CATEGORIES:
-    groups = fetch_csv(f'https://tcgcsv.com{cat_id}/Groups.csv')
+    groups = fetch_csv(make_url(cat_id, 'Groups.csv'))
     print(f'Fetching {len(groups)} {lang} sets...')
 
     for i, g in enumerate(groups, 1):
       gid = g['groupId']
       set_name = g['name']
       try:
-        rows = fetch_csv(
-            f'https://tcgcsv.com{cat_id}/{gid}/ProductsAndPrices.csv'
-        )
+        rows = fetch_csv(make_url(cat_id, gid, 'ProductsAndPrices.csv'))
         card_count = 0
         for r in rows:
           number = r.get('extNumber', '').strip()
